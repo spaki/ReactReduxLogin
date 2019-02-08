@@ -3,11 +3,14 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import * as AuthenticationActions from '../Actions/AuthenticationActions';
+import * as Client from '../ApiClient';
+import * as Helper from '../Helper';
 
 class Login extends Component {
   state = {
     email: '',
-    password: ''
+    password: '',
+    error: null
   };
   
   handleInputChange = (event) => {
@@ -18,7 +21,35 @@ class Login extends Component {
   
   handleSubmit = (event) => {
     event.preventDefault();
-    this.props.login(this.state);
+
+    Client
+      .Post("User/login", this.state)
+      .then(response => { 
+        this.login(response);
+      })
+      .catch(error => { 
+        this.setState({ error: "invalid login" });
+        console.log(error);
+      });
+  }
+
+  login = (user) => {
+    localStorage.setItem(Helper.getUserStorageKey(), JSON.stringify(user));
+    this.props.login(user);
+  }
+
+  getLoginError = () => {
+    if(!Helper.isNullOrWhiteSpaceOrEmpty(this.state.error))
+      return(
+        <div>
+          <br />
+          <div className="form-group alert alert-danger" role="alert">
+            { this.state.error }
+          </div>
+        </div>
+      );
+
+    return null;
   }
 
   render() {
@@ -33,6 +64,7 @@ class Login extends Component {
           <input type="password" name="password" value={ this.state.password } onChange={ this.handleInputChange } className="form-control" placeholder="Password" required></input>
         </div>
         <button type="submit" className="btn btn-primary">Submit</button>
+        { this.getLoginError() }
       </form>
     );
   }

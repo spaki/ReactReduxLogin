@@ -7,6 +7,7 @@ import * as AuthenticationActions from '../Actions/AuthenticationActions';
 
 class Menu extends Component {
   logoff = () => {
+    localStorage.clear();
     this.props.logoff();
   }
   
