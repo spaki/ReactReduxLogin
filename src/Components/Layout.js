@@ -1,0 +1,54 @@
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Route } from 'react-router-dom';
+
+import * as AuthenticationActions from '../Actions/AuthenticationActions';
+
+import Menu from './Menu';
+import Content from './Content';
+import About from './About';
+import Login from './Login';
+
+class Layout extends Component {
+  getAnonymousLayout = () => {
+    return (
+      <div>
+        <Login />
+      </div>
+    );
+  }
+
+  getAuthenticatedLayout = () => {
+    return (
+      <div>
+        <Route exact path="/" component={Content} />
+        <Route path="/about" component={About} />
+      </div>
+    );
+  }
+
+  render() {
+    var layout = this.getAnonymousLayout();
+
+    if(this.props.user)
+      layout = this.getAuthenticatedLayout();
+
+    return (
+      <div>
+        <Menu/>
+        <main role="main" className="container">
+          { layout }
+        </main>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = state => ({
+  user: state.AuthenticationReducer.user,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators(AuthenticationActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Layout);
