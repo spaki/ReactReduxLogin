@@ -34,8 +34,7 @@ export function getHeaders() {
 
     var userStored = localStorage.getItem(getUserStorageKey());
 
-    if(!isNullOrWhiteSpaceOrEmpty(userStored))
-    {
+    if(!isNullOrWhiteSpaceOrEmpty(userStored)) {
       var user = JSON.parse(userStored);
       headers["Authorization"] = "Bearer " + user.token;
     }

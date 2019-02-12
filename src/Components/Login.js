@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import * as AuthenticationActions from '../Actions/AuthenticationActions';
 import * as Client from '../ApiClient';
 import * as Helper from '../Helper';
+import * as AuthenticationHelper from '../AuthenticationHelper';
 
 class Login extends Component {
   state = {
@@ -34,7 +35,7 @@ class Login extends Component {
   }
 
   login = (user) => {
-    localStorage.setItem(Helper.getUserStorageKey(), JSON.stringify(user));
+    AuthenticationHelper.setLocalUser(user);
     this.props.login(user);
   }
 

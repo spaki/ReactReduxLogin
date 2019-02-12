@@ -1,16 +1,31 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Route } from 'react-router-dom';
-
-import * as AuthenticationActions from '../Actions/AuthenticationActions';
+import { Route, Switch } from 'react-router-dom';
 
 import Menu from './Menu';
 import Content from './Content';
 import About from './About';
 import Login from './Login';
+import NotFound from './NotFound';
+
+import * as AuthenticationActions from '../Actions/AuthenticationActions';
+
+import * as AuthenticationHelper from '../AuthenticationHelper';
+import * as Helper from '../Helper';
 
 class Layout extends Component {
+  constructor(props) {
+    super(props);
+
+    var user = AuthenticationHelper.getLocalUser();
+
+    if(!Helper.isNullOrWhiteSpaceOrEmpty(user)) {
+      AuthenticationHelper.setLocalUser(user);
+      this.props.login(user);
+    }
+  }
+
   getAnonymousLayout = () => {
     return (
       <div>
@@ -22,8 +37,11 @@ class Layout extends Component {
   getAuthenticatedLayout = () => {
     return (
       <div>
-        <Route exact path="/" component={Content} />
-        <Route path="/about" component={About} />
+        <Switch>
+          <Route exact path="/" component={Content} />
+          <Route path="/about" component={About} />
+          <Route component={NotFound} />
+        </Switch>
       </div>
     );
   }
@@ -31,8 +49,9 @@ class Layout extends Component {
   render() {
     var layout = this.getAnonymousLayout();
 
-    if(this.props.user)
+    if(this.props.user) {
       layout = this.getAuthenticatedLayout();
+    }
 
     return (
       <div>
